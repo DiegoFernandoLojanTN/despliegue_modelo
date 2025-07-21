@@ -201,7 +201,7 @@ function displayResults(data, originalText) {
     console.log('data.prediction:', data.prediction);
     console.log('typeof data.prediction:', typeof data.prediction);
     
-    const isStress = data.prediction === 1;
+    const isStress = data.prediction === 'Estrés';
     console.log('isStress (data.prediction === 1):', isStress);
     
     // También probar con string
