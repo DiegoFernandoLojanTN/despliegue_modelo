@@ -156,7 +156,7 @@ async function analyzeStress(text) {
             analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Analizando...';
         }
         
-        const response = await fetch(`${API_BASE_URL}/predict`, {
+        const response = await fetch(`${API_BASE_URL}/api/predict`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
