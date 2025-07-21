@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acerca del Proyecto - Detector de Estrés</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-brain me-2"></i>
+                Detector de Estrés
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="fas fa-home me-1"></i>
+                            Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="about.html">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Acerca del Proyecto
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container py-5">
+            <!-- Header -->
+            <div class="row mb-5">
+                <div class="col-12 text-center">
+                    <h1 class="display-4 fw-bold text-primary mb-4">
+                        <i class="fas fa-info-circle me-3"></i>
+                        Acerca del Proyecto
+                    </h1>
+                    <p class="lead text-muted">
+                        Análisis de sentimientos para detección de estrés en mensajes de Twitter/X
+                    </p>
+                </div>
+            </div>
+
+            <!-- Project Overview -->
+            <div class="row mb-5">
+                <div class="col-lg-8 mx-auto">
+                    <div class="card shadow border-0">
+                        <div class="card-header bg-primary text-white">
+                            <h3 class="mb-0">
+                                <i class="fas fa-target me-2"></i>
+                                Objetivo del Proyecto
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-4">
+                                Este proyecto desarrolla un sistema de análisis de sentimientos especializado en la 
+                                detección de estrés en mensajes de Twitter/X. Utilizando técnicas avanzadas de 
+                                procesamiento de lenguaje natural y machine learning, el sistema puede identificar 
+                                patrones lingüísticos asociados con estados de estrés en el texto.
+                            </p>
+                            
+                            <h5 class="text-primary mb-3">Preguntas de Investigación</h5>
+                            <ul class="list-group list-group-flush mb-4">
+                                <li class="list-group-item">
+                                    <i class="fas fa-question-circle text-info me-2"></i>
+                                    ¿Es posible detectar automáticamente indicadores de estrés en mensajes de redes sociales?
+                                </li>
+                                <li class="list-group-item">
+                                    <i class="fas fa-question-circle text-info me-2"></i>
+                                    ¿Qué técnicas de machine learning son más efectivas para esta tarea?
+                                </li>
+                                <li class="list-group-item">
+                                    <i class="fas fa-question-circle text-info me-2"></i>
+                                    ¿Cómo optimizar los hiperparámetros para maximizar la precisión del modelo?
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Methodology -->
+            <div class="row mb-5">
+                <div class="col-12">
+                    <div class="card shadow border-0">
+                        <div class="card-header bg-success text-white">
+                            <h3 class="mb-0">
+                                <i class="fas fa-cogs me-2"></i>
+                                Metodología
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-6 mb-4">
+                                    <h5 class="text-success">1. Preprocesamiento de Datos</h5>
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success me-2"></i>Limpieza de texto (URLs, menciones, hashtags)</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Tokenización y normalización</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Eliminación de stopwords</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Lematización con Stanza</li>
+                                    </ul>
+                                </div>
+                                <div class="col-lg-6 mb-4">
+                                    <h5 class="text-success">2. Generación de Embeddings</h5>
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success me-2"></i>FastText para vectorización</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Dimensionalidad: 128 características</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Normalización con StandardScaler</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Balanceo con SMOTE</li>
+                                    </ul>
+                                </div>
+                                <div class="col-lg-6 mb-4">
+                                    <h5 class="text-success">3. Entrenamiento del Modelo</h5>
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success me-2"></i>Support Vector Machine (SVM)</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Kernel RBF optimizado</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Validación cruzada estratificada</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>División 80-10-10</li>
+                                    </ul>
+                                </div>
+                                <div class="col-lg-6 mb-4">
+                                    <h5 class="text-success">4. Optimización con Optuna</h5>
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success me-2"></i>TPE Sampler para búsqueda eficiente</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>100 trials de optimización</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Optimización del F1-Score</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Tiempo total: 592.1 segundos</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div class="row mb-5">
+                <div class="col-12">
+                    <div class="card shadow border-0">
+                        <div class="card-header bg-info text-white">
+                            <h3 class="mb-0">
+                                <i class="fas fa-chart-line me-2"></i>
+                                Resultados Obtenidos
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center mb-4">
+                                <div class="col-md-3 col-6 mb-3">
+                                    <div class="metric-display">
+                                        <h2 class="text-primary fw-bold">92.6%</h2>
+                                        <p class="text-muted mb-0">Exactitud</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6 mb-3">
+                                    <div class="metric-display">
+                                        <h2 class="text-success fw-bold">92.8%</h2>
+                                        <p class="text-muted mb-0">Precisión</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6 mb-3">
+                                    <div class="metric-display">
+                                        <h2 class="text-warning fw-bold">92.4%</h2>
+                                        <p class="text-muted mb-0">Sensibilidad</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6 mb-3">
+                                    <div class="metric-display">
+                                        <h2 class="text-danger fw-bold">92.6%</h2>
+                                        <p class="text-muted mb-0">F1-Score</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <h5 class="text-info mb-3">Configuración Óptima</h5>
+                                    <table class="table table-striped">
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>Kernel:</strong></td>
+                                                <td>RBF</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Parámetro C:</strong></td>
+                                                <td>21.3104</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Gamma:</strong></td>
+                                                <td>scale</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Class Weight:</strong></td>
+                                                <td>balanced</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-lg-6">
+                                    <h5 class="text-info mb-3">Datos del Entrenamiento</h5>
+                                    <table class="table table-striped">
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>Muestras de Entrenamiento:</strong></td>
+                                                <td>3800</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Muestras de Validación:</strong></td>
+                                                <td>475</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Muestras de Prueba:</strong></td>
+                                                <td>475</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Vectores de Soporte:</strong></td>
+                                                <td>1717</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technical Details -->
+            <div class="row mb-5">
+                <div class="col-12">
+                    <div class="card shadow border-0">
+                        <div class="card-header bg-warning text-dark">
+                            <h3 class="mb-0">
+                                <i class="fas fa-code me-2"></i>
+                                Detalles Técnicos
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-6 mb-4">
+                                    <h5 class="text-warning">Tecnologías Utilizadas</h5>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Python
+                                            <span class="badge bg-primary rounded-pill">3.11+</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Scikit-learn
+                                            <span class="badge bg-success rounded-pill">SVM</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            FastText
+                                            <span class="badge bg-info rounded-pill">Embeddings</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Optuna
+                                            <span class="badge bg-warning rounded-pill">Optimización</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            NLTK/Stanza
+                                            <span class="badge bg-danger rounded-pill">NLP</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-lg-6 mb-4">
+                                    <h5 class="text-warning">Características del Dataset</h5>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">
+                                            <strong>Fuente:</strong> Tweets relacionados con apagones eléctricos
+                                        </li>
+                                        <li class="list-group-item">
+                                            <strong>Idioma:</strong> Español
+                                        </li>
+                                        <li class="list-group-item">
+                                            <strong>Clases:</strong> Estrés / No Estrés
+                                        </li>
+                                        <li class="list-group-item">
+                                            <strong>Balanceo:</strong> SMOTE para equilibrar clases
+                                        </li>
+                                        <li class="list-group-item">
+                                            <strong>Vectorización:</strong> FastText 128D
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conclusions -->
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="card shadow border-0">
+                        <div class="card-header bg-dark text-white">
+                            <h3 class="mb-0">
+                                <i class="fas fa-lightbulb me-2"></i>
+                                Conclusiones
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-success" role="alert">
+                                <h5 class="alert-heading">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    Resultados Exitosos
+                                </h5>
+                                <p class="mb-0">
+                                    El modelo SVM optimizado logró un <strong>F1-Score de 92.60%</strong> en el conjunto de prueba, 
+                                    demostrando alta efectividad para detectar estrés en mensajes de Twitter/X. La optimización 
+                                    con Optuna permitió encontrar la configuración óptima de hiperparámetros de manera eficiente.
+                                </p>
+                            </div>
+                            
+                            <h5 class="text-dark mb-3">Aplicaciones Potenciales</h5>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-heart text-danger me-2"></i>
+                                    <strong>Salud Mental:</strong> Monitoreo temprano de indicadores de estrés
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-chart-line text-primary me-2"></i>
+                                    <strong>Análisis Social:</strong> Estudios de impacto de eventos en la población
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-shield-alt text-success me-2"></i>
+                                    <strong>Prevención:</strong> Sistemas de alerta temprana para crisis
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-users text-info me-2"></i>
+                                    <strong>Investigación:</strong> Análisis de patrones de comportamiento social
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>
+                        <i class="fas fa-brain me-2"></i>
+                        Detector de Estrés en Tweets
+                    </h5>
+                    <p class="mb-0">Sistema de análisis de sentimientos basado en SVM optimizado con Optuna.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">
+                        <i class="fas fa-chart-line me-1"></i>
+                        F1-Score: 92.60%
+                    </p>
+                    <p class="mb-0">
+                        <i class="fas fa-database me-1"></i>
+                        Entrenado con 3,800 muestras
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
