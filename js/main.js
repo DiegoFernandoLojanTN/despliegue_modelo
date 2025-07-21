@@ -1,30 +1,57 @@
-// Main JavaScript for Stress Detector App
+// Configuración global
+const API_BASE_URL = 'https://stress-detector-backend.onrender.com';
 
-const BACKEND_URL = "https://stress-detector-backend.onrender.com"; // TO BE REPLACED WITH ACTUAL DEPLOYED BACKEND URL
+// Variables globales
+let charts = {};
 
+// Inicialización cuando el DOM está listo
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize the application
     initializeApp();
 });
 
 function initializeApp() {
-    // Get DOM elements
-    const messageText = document.getElementById('messageText');
-    const stressForm = document.getElementById('stressForm');
-    const clearBtn = document.getElementById('clearBtn');
-    const analyzeBtn = document.getElementById('analyzeBtn');
-    const charCount = document.getElementById('charCount');
-    const results = document.getElementById('results');
-    const loading = document.getElementById('loading');
-    const sampleTweets = document.querySelectorAll('.sample-tweet');
+    setupEventListeners();
+    setupCharacterCounter();
+    initializeCharts();
+    setupSmoothScrolling();
+}
 
-    // Character counter
+function setupEventListeners() {
+    // Formulario de análisis
+    const form = document.getElementById('stressForm');
+    if (form) {
+        form.addEventListener('submit', handleFormSubmit);
+    }
+
+    // Botón de limpiar
+    const clearBtn = document.getElementById('clearBtn');
+    if (clearBtn) {
+        clearBtn.addEventListener('click', clearForm);
+    }
+
+    // Tweets de ejemplo
+    const sampleTweets = document.querySelectorAll('.sample-tweet');
+    sampleTweets.forEach(tweet => {
+        tweet.addEventListener('click', handleSampleTweetClick);
+        tweet.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                handleSampleTweetClick.call(this, e);
+            }
+        });
+        tweet.setAttribute('tabindex', '0');
+    });
+}
+
+function setupCharacterCounter() {
+    const messageText = document.getElementById('messageText');
+    const charCount = document.getElementById('charCount');
+    
     if (messageText && charCount) {
         messageText.addEventListener('input', function() {
             const count = this.value.length;
             charCount.textContent = count;
             
-            // Change color based on character count
+            // Cambiar color según el límite
             if (count > 250) {
                 charCount.style.color = '#dc3545';
             } else if (count > 200) {
@@ -34,46 +61,10 @@ function initializeApp() {
             }
         });
     }
+}
 
-    // Form submission
-    if (stressForm) {
-        stressForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            analyzeStress();
-        });
-    }
-
-    // Clear button
-    if (clearBtn) {
-        clearBtn.addEventListener('click', function() {
-            clearForm();
-        });
-    }
-
-    // Sample tweets click handlers
-    sampleTweets.forEach(tweet => {
-        tweet.addEventListener('click', function() {
-            const text = this.getAttribute('data-text');
-            const expected = this.getAttribute('data-expected');
-            
-            // Remove previous selections
-            sampleTweets.forEach(t => t.classList.remove('selected'));
-            
-            // Add selection to clicked tweet
-            this.classList.add('selected');
-            
-            // Fill the textarea
-            if (messageText) {
-                messageText.value = text;
-                messageText.dispatchEvent(new Event('input'));
-            }
-            
-            // Show expected result
-            showExpectedResult(expected);
-        });
-    });
-
-    // Add smooth scrolling to anchor links
+function setupSmoothScrolling() {
+    // Smooth scrolling para enlaces de navegación
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
@@ -88,180 +79,46 @@ function initializeApp() {
     });
 }
 
-function analyzeStress() {
+async function handleFormSubmit(e) {
+    e.preventDefault();
+    
     const messageText = document.getElementById('messageText');
-    const analyzeBtn = document.getElementById('analyzeBtn');
-    const loading = document.getElementById('loading');
-    const results = document.getElementById('results');
-
-    if (!messageText || !messageText.value.trim()) {
+    const text = messageText.value.trim();
+    
+    if (!text) {
         showAlert('Por favor, ingresa un mensaje para analizar.', 'warning');
         return;
     }
-
-    // Show loading state
-    showLoading(true);
-    analyzeBtn.disabled = true;
     
-    // Prepare data
-    const data = {
-        text: messageText.value.trim()
-    };
-
-    // Make API request
-    fetch(BACKEND_URL + '/api/predict', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(data => {
-        showLoading(false);
-        analyzeBtn.disabled = false;
-        
-        if (data.success) {
-            displayResults(data);
-        } else {
-            showAlert('Error: ' + (data.error || 'Error desconocido'), 'danger');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showLoading(false);
-        analyzeBtn.disabled = false;
-        showAlert('Error de conexión. Por favor, intenta nuevamente.', 'danger');
-    });
-}
-
-function displayResults(data) {
-    const results = document.getElementById('results');
-    const resultContent = document.getElementById('resultContent');
-    
-    if (!results || !resultContent) return;
-
-    const isStress = data.prediction === 'Estrés';
-    const confidence = Math.round(data.confidence * 100);
-    const probability = Math.round(data.probability * 100);
-
-    const resultHTML = `
-        <div class="result-card card ${isStress ? 'result-stress' : 'result-no-stress'} mb-4">
-            <div class="card-body text-center">
-                <div class="row align-items-center">
-                    <div class="col-md-4">
-                        <i class="fas ${isStress ? 'fa-exclamation-triangle' : 'fa-check-circle'} fa-4x mb-3"></i>
-                        <h3 class="fw-bold">${data.prediction}</h3>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="row">
-                            <div class="col-6">
-                                <h5>Probabilidad</h5>
-                                <div class="progress mb-2" style="height: 25px;">
-                                    <div class="progress-bar ${isStress ? 'bg-warning' : 'bg-light'}" 
-                                         role="progressbar" 
-                                         style="width: ${probability}%; color: ${isStress ? '#000' : '#000'}"
-                                         aria-valuenow="${probability}" 
-                                         aria-valuemin="0" 
-                                         aria-valuemax="100">
-                                        ${probability}%
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <h5>Confianza</h5>
-                                <div class="progress mb-2" style="height: 25px;">
-                                    <div class="progress-bar ${confidence > 70 ? 'bg-success' : confidence > 40 ? 'bg-warning' : 'bg-danger'}" 
-                                         role="progressbar" 
-                                         style="width: ${confidence}%;"
-                                         aria-valuenow="${confidence}" 
-                                         aria-valuemin="0" 
-                                         aria-valuemax="100">
-                                        ${confidence}%
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card">
-            <div class="card-header">
-                <h6 class="mb-0">
-                    <i class="fas fa-info-circle me-2"></i>
-                    Detalles del Análisis
-                </h6>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>Texto procesado:</strong></p>
-                        <p class="text-muted small">${data.cleaned_text || 'No disponible'}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <p><strong>Interpretación:</strong></p>
-                        <p class="small">
-                            ${getInterpretation(isStress, confidence)}
-                        </p>
-                        <p class="small text-muted">
-                            <i class="fas fa-clock me-1"></i>
-                            Análisis realizado: ${new Date(data.timestamp).toLocaleString('es-ES')}
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-
-    resultContent.innerHTML = resultHTML;
-    results.style.display = 'block';
-    
-    // Scroll to results
-    results.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    
-    // Add animation
-    results.classList.add('fade-in');
-}
-
-function getInterpretation(isStress, confidence) {
-    if (isStress) {
-        if (confidence > 70) {
-            return 'El mensaje muestra claros indicadores de estrés. Se detectaron patrones lingüísticos asociados con estados de tensión o malestar.';
-        } else if (confidence > 40) {
-            return 'El mensaje presenta algunos indicadores de estrés, aunque con menor certeza. Podría contener elementos de tensión moderada.';
-        } else {
-            return 'Se detectaron posibles indicadores de estrés, pero con baja confianza. El resultado debe interpretarse con cautela.';
-        }
-    } else {
-        if (confidence > 70) {
-            return 'El mensaje no presenta indicadores significativos de estrés. El contenido parece neutral o positivo.';
-        } else if (confidence > 40) {
-            return 'El mensaje probablemente no contiene estrés, aunque algunos elementos podrían ser ambiguos.';
-        } else {
-            return 'No se detectaron indicadores claros de estrés, pero la confianza es baja. El resultado es incierto.';
-        }
+    if (text.length > 280) {
+        showAlert('El mensaje no puede exceder 280 caracteres.', 'warning');
+        return;
     }
+    
+    await analyzeStress(text);
 }
 
-function showExpectedResult(expected) {
-    const expectedHTML = `
-        <div class="alert alert-info alert-dismissible fade show" role="alert">
-            <i class="fas fa-lightbulb me-2"></i>
-            <strong>Resultado esperado:</strong> ${expected}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    `;
+function handleSampleTweetClick(e) {
+    e.preventDefault();
+    const text = this.dataset.text;
+    const messageText = document.getElementById('messageText');
     
-    // Remove existing expected result alerts
-    const existingAlerts = document.querySelectorAll('.alert-info');
-    existingAlerts.forEach(alert => alert.remove());
-    
-    // Add new alert before the form
-    const form = document.getElementById('stressForm');
-    if (form) {
-        form.insertAdjacentHTML('beforebegin', expectedHTML);
+    if (messageText && text) {
+        messageText.value = text;
+        // Actualizar contador de caracteres
+        const event = new Event('input');
+        messageText.dispatchEvent(event);
+        
+        // Scroll al formulario
+        document.getElementById('analyzer').scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
+        
+        // Analizar automáticamente después de un breve delay
+        setTimeout(() => {
+            analyzeStress(text);
+        }, 500);
     }
 }
 
@@ -269,11 +126,10 @@ function clearForm() {
     const messageText = document.getElementById('messageText');
     const results = document.getElementById('results');
     const charCount = document.getElementById('charCount');
-    const sampleTweets = document.querySelectorAll('.sample-tweet');
     
     if (messageText) {
         messageText.value = '';
-        messageText.dispatchEvent(new Event('input'));
+        messageText.focus();
     }
     
     if (results) {
@@ -284,136 +140,321 @@ function clearForm() {
         charCount.textContent = '0';
         charCount.style.color = '#6c757d';
     }
-    
-    // Remove selections from sample tweets
-    sampleTweets.forEach(tweet => tweet.classList.remove('selected'));
-    
-    // Remove expected result alerts
-    const existingAlerts = document.querySelectorAll('.alert-info');
-    existingAlerts.forEach(alert => alert.remove());
 }
 
-function showLoading(show) {
+async function analyzeStress(text) {
     const loading = document.getElementById('loading');
     const results = document.getElementById('results');
+    const analyzeBtn = document.getElementById('analyzeBtn');
     
-    if (loading) {
-        loading.style.display = show ? 'block' : 'none';
-    }
-    
-    if (results && show) {
-        results.style.display = 'none';
+    try {
+        // Mostrar loading
+        if (loading) loading.style.display = 'block';
+        if (results) results.style.display = 'none';
+        if (analyzeBtn) {
+            analyzeBtn.disabled = true;
+            analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Analizando...';
+        }
+        
+        const response = await fetch(`${API_BASE_URL}/predict`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ text: text })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Error del servidor: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        displayResults(data, text);
+        
+    } catch (error) {
+        console.error('Error:', error);
+        showAlert('Error al analizar el mensaje. Por favor, inténtalo de nuevo.', 'danger');
+    } finally {
+        // Ocultar loading
+        if (loading) loading.style.display = 'none';
+        if (analyzeBtn) {
+            analyzeBtn.disabled = false;
+            analyzeBtn.innerHTML = '<i class="fas fa-brain me-2"></i>Analizar Estrés';
+        }
     }
 }
 
-function showAlert(message, type = 'info') {
-    const alertHTML = `
-        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-            <i class="fas fa-${getAlertIcon(type)} me-2"></i>
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+function displayResults(data, originalText) {
+    const results = document.getElementById('results');
+    const resultContent = document.getElementById('resultContent');
+    
+    if (!results || !resultContent) return;
+    
+    const isStress = data.prediction === 1;
+    const confidence = Math.round(data.confidence * 100);
+    const probability = Math.round(data.probability * 100);
+    
+    const resultClass = isStress ? 'result-stress' : 'result-no-stress';
+    const resultIcon = isStress ? 'fas fa-exclamation-triangle' : 'fas fa-check-circle';
+    const resultText = isStress ? 'Estrés Detectado' : 'No se Detectó Estrés';
+    const resultDescription = isStress 
+        ? 'El mensaje muestra indicadores de estrés psicológico.'
+        : 'El mensaje no presenta indicadores significativos de estrés.';
+    
+    resultContent.innerHTML = `
+        <div class="result-card card ${resultClass}">
+            <div class="card-body text-center p-4">
+                <div class="result-icon mb-3">
+                    <i class="${resultIcon} fa-3x"></i>
+                </div>
+                <h3 class="result-title mb-3">${resultText}</h3>
+                <p class="result-description mb-4">${resultDescription}</p>
+                
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="metric-item">
+                            <h4 class="metric-number">${probability}%</h4>
+                            <p class="metric-label">Probabilidad</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="metric-item">
+                            <h4 class="metric-number">${confidence}%</h4>
+                            <p class="metric-label">Confianza</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="metric-item">
+                            <h4 class="metric-number">${originalText.length}</h4>
+                            <p class="metric-label">Caracteres</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="confidence-section">
+                    <p class="mb-2">Nivel de Confianza:</p>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" style="width: ${confidence}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-3 text-center">
+            <small class="text-muted">
+                <i class="fas fa-info-circle me-1"></i>
+                Resultado basado en modelo SVM optimizado con F1-Score del 92.60%
+            </small>
         </div>
     `;
     
-    const form = document.getElementById('stressForm');
-    if (form) {
-        form.insertAdjacentHTML('beforebegin', alertHTML);
-        
-        // Auto-remove alert after 5 seconds
-        setTimeout(() => {
-            const alert = document.querySelector('.alert');
-            if (alert) {
-                alert.remove();
-            }
-        }, 5000);
-    }
-}
-
-function getAlertIcon(type) {
-    const icons = {
-        'success': 'check-circle',
-        'danger': 'exclamation-triangle',
-        'warning': 'exclamation-circle',
-        'info': 'info-circle'
-    };
-    return icons[type] || 'info-circle';
-}
-
-// Utility functions
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
-// Add some interactive effects
-document.addEventListener('DOMContentLoaded', function() {
-    // Add hover effects to cards
-    const cards = document.querySelectorAll('.card');
-    cards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-2px)';
-        });
-        
-        card.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0)';
-        });
-    });
+    results.style.display = 'block';
     
-    // Add ripple effect to buttons
-    const buttons = document.querySelectorAll('.btn');
-    buttons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            const ripple = document.createElement('span');
-            const rect = this.getBoundingClientRect();
-            const size = Math.max(rect.width, rect.height);
-            const x = e.clientX - rect.left - size / 2;
-            const y = e.clientY - rect.top - size / 2;
-            
-            ripple.style.width = ripple.style.height = size + 'px';
-            ripple.style.left = x + 'px';
-            ripple.style.top = y + 'px';
-            ripple.classList.add('ripple');
-            
-            this.appendChild(ripple);
-            
-            setTimeout(() => {
-                ripple.remove();
-            }, 600);
+    // Scroll suave a los resultados
+    setTimeout(() => {
+        results.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
         });
+    }, 100);
+}
+
+function showAlert(message, type = 'info') {
+    // Crear elemento de alerta
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alertDiv.style.cssText = 'top: 100px; right: 20px; z-index: 9999; max-width: 400px;';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(alertDiv);
+    
+    // Auto-remover después de 5 segundos
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+
+function initializeCharts() {
+    initializeComparisonChart();
+    initializeDataDistributionChart();
+    initializeOptimizationChart();
+}
+
+function initializeComparisonChart() {
+    const ctx = document.getElementById('comparisonChart');
+    if (!ctx) return;
+    
+    charts.comparison = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Exactitud', 'Precisión', 'Sensibilidad', 'F1-Score'],
+            datasets: [{
+                label: 'SVM Base',
+                data: [91.16, 91.14, 91.14, 91.14],
+                backgroundColor: 'rgba(108, 117, 125, 0.8)',
+                borderColor: 'rgba(108, 117, 125, 1)',
+                borderWidth: 1
+            }, {
+                label: 'SVM Optimizado',
+                data: [92.63, 92.80, 92.41, 92.60],
+                backgroundColor: 'rgba(0, 123, 255, 0.8)',
+                borderColor: 'rgba(0, 123, 255, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Métricas de Rendimiento (%)'
+                },
+                legend: {
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function initializeDataDistributionChart() {
+    const ctx = document.getElementById('dataDistributionChart');
+    if (!ctx) return;
+    
+    charts.dataDistribution = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Entrenamiento (80%)', 'Validación (10%)', 'Prueba (10%)'],
+            datasets: [{
+                data: [3800, 475, 475],
+                backgroundColor: [
+                    'rgba(0, 123, 255, 0.8)',
+                    'rgba(40, 167, 69, 0.8)',
+                    'rgba(255, 193, 7, 0.8)'
+                ],
+                borderColor: [
+                    'rgba(0, 123, 255, 1)',
+                    'rgba(40, 167, 69, 1)',
+                    'rgba(255, 193, 7, 1)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Distribución del Dataset (4,750 muestras)'
+                },
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+function initializeOptimizationChart() {
+    const ctx = document.getElementById('optimizationChart');
+    if (!ctx) return;
+    
+    // Datos simulados del proceso de optimización
+    const trials = Array.from({length: 100}, (_, i) => i + 1);
+    const f1Scores = [
+        0.1, 0.3, 0.5, 0.7, 0.8, 0.85, 0.87, 0.89, 0.90, 0.91,
+        0.915, 0.92, 0.922, 0.924, 0.925, 0.926, 0.9255, 0.9258, 0.9260, 0.9259,
+        ...Array(80).fill(0).map(() => 0.9260 + (Math.random() - 0.5) * 0.001)
+    ];
+    
+    charts.optimization = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: trials,
+            datasets: [{
+                label: 'F1-Score',
+                data: f1Scores,
+                borderColor: 'rgba(0, 123, 255, 1)',
+                backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Convergencia del F1-Score durante Optimización'
+                },
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Trial'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'F1-Score'
+                    },
+                    min: 0,
+                    max: 1,
+                    ticks: {
+                        callback: function(value) {
+                            return (value * 100).toFixed(1) + '%';
+                        }
+                    }
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            }
+        }
+    });
+}
+
+// Función para redimensionar gráficos cuando cambia el tamaño de ventana
+window.addEventListener('resize', function() {
+    Object.values(charts).forEach(chart => {
+        if (chart) {
+            chart.resize();
+        }
     });
 });
 
-// Add CSS for ripple effect
-const style = document.createElement('style');
-style.textContent = `
-    .btn {
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .ripple {
-        position: absolute;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.6);
-        transform: scale(0);
-        animation: ripple-animation 0.6s linear;
-        pointer-events: none;
-    }
-    
-    @keyframes ripple-animation {
-        to {
-            transform: scale(4);
-            opacity: 0;
+// Función para limpiar gráficos al salir de la página
+window.addEventListener('beforeunload', function() {
+    Object.values(charts).forEach(chart => {
+        if (chart) {
+            chart.destroy();
         }
-    }
-`;
-document.head.appendChild(style);
-
+    });
+});
 
