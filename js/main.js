@@ -1,6 +1,6 @@
 // Main JavaScript for Stress Detector App
 
-const BACKEND_URL = "YOUR_BACKEND_URL_HERE"; // TO BE REPLACED WITH ACTUAL DEPLOYED BACKEND URL
+const BACKEND_URL = "https://stress-detector-backend.onrender.com"; // TO BE REPLACED WITH ACTUAL DEPLOYED BACKEND URL
 
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize the application
