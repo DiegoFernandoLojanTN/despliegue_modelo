@@ -169,6 +169,12 @@ async function analyzeStress(text) {
         }
         
         const data = await response.json();
+        
+        // Log de depuración para ver qué datos recibe el frontend
+        console.log('Datos recibidos del backend:', data);
+        console.log('Predicción:', data.prediction);
+        console.log('Tipo de predicción:', typeof data.prediction);
+        
         displayResults(data, text);
         
     } catch (error) {
@@ -190,7 +196,18 @@ function displayResults(data, originalText) {
     
     if (!results || !resultContent) return;
     
+    // Log de depuración adicional
+    console.log('=== DISPLAY RESULTS DEBUG ===');
+    console.log('data.prediction:', data.prediction);
+    console.log('typeof data.prediction:', typeof data.prediction);
+    
     const isStress = data.prediction === 1;
+    console.log('isStress (data.prediction === 1):', isStress);
+    
+    // También probar con string
+    const isStressString = data.prediction === "1" || data.prediction === "Estrés";
+    console.log('isStressString:', isStressString);
+    
     const confidence = Math.round(data.confidence * 100);
     const probability = Math.round(data.probability * 100);
     
@@ -200,6 +217,10 @@ function displayResults(data, originalText) {
     const resultDescription = isStress 
         ? 'El mensaje muestra indicadores de estrés psicológico.'
         : 'El mensaje no presenta indicadores significativos de estrés.';
+    
+    console.log('resultClass:', resultClass);
+    console.log('resultText:', resultText);
+    console.log('==============================');
     
     resultContent.innerHTML = `
         <div class="result-card card ${resultClass}">
